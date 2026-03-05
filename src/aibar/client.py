@@ -1,0 +1,25 @@
+from aibar.base import BaseServer, BaseAiProvider, BaseAiClient
+from aibar.schema.server_schema import ServerSchema
+from aibar.schema.ai_schema import (
+    AiProviderSchema)
+from typing import Optional
+from aibar.loader import ServersLoader, AIProviderLoader
+
+
+
+class aibarClient:
+    def __init__(self):
+        self.server: Optional[BaseServer] = None
+        self.ai_provider: Optional[BaseAiProvider] = None
+        self.ai_client: Optional[BaseAiClient] = None
+        self.server_loader = ServersLoader()
+        self.ai_provider_loader = AIProviderLoader()
+
+    async def load_server(self, tag: str, server_schema: ServerSchema):
+        self.server = self.server_loader.load_server(tag, server_schema)
+        await self.server.prepare_session()
+
+    def load_ai_provider(self, ai_provider_schema: AiProviderSchema):
+        ai_provider_obj = self.ai_provider_loader.load_ai_provider(ai_provider_schema)
+        self.ai_provider = ai_provider_obj
+        self.ai_client = ai_provider_obj.get_client()
